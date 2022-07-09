@@ -1,11 +1,10 @@
-name: Lint
+name: Prepare
 
 on:
-  - pull_request
+  workflow_call:
 
 jobs:
-  lint:
-    name: Lint
+  prepare:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,6 +37,3 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-
-      - name: Run linters
-        run: pnpm lint
