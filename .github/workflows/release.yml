@@ -1,12 +1,18 @@
-name: Test
+name: Push Release
 
 on:
-  - pull_request
-  - push
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
 
 jobs:
-  test:
-    name: Test
+  release:
+    permissions:
+      contents: write
+    name: Build & Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,5 +46,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run tests
-        run: pnpm test
+      - name: Build dist
+        run: pnpm build
+
+      - name: Publish Packages
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          pnpm config set "//registry.npmjs.org/:_authToken" "${NPM_TOKEN}"
+          pnpm release
+
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          discussion_category_name: Announcements
