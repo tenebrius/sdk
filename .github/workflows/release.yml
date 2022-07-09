@@ -54,7 +54,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           pnpm config set "//registry.npmjs.org/:_authToken" "${NPM_TOKEN}"
-          pnpm release
+          pnpm publish --access=public
 
       - name: GitHub Release
         uses: softprops/action-gh-release@v1
