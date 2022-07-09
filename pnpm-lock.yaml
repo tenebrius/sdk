@@ -29,6 +29,7 @@ specifiers:
   simple-git-hooks: ^2.8.0
   ts-jest: 27.0.7
   ts-node: 10.4.0
+  tslib: ^2.4.0
   typescript: 4.5.2
 
 dependencies:
@@ -62,6 +63,7 @@ devDependencies:
   simple-git-hooks: 2.8.0
   ts-jest: 27.0.7_pyvehg5xwu6dr7ymdi6f4bgcyu
   ts-node: 10.4.0_hzra3vi2qfsunw3addlb4emzwu
+  tslib: 2.4.0
   typescript: 4.5.2
 
 packages:
