@@ -280,6 +280,11 @@ export interface IItems<T extends Item> {
 		query?: Q,
 		options?: ItemsOptions
 	): Promise<ManyItems<T, Q>>;
+	updateBatch<Q extends QueryMany<T>>(
+		items: PartialItem<T>[],
+		query?: Q,
+		options?: ItemsOptions
+	): Promise<ManyItems<T, Q>>;
 
 	deleteOne(id: ID, options?: ItemsOptions): Promise<void>;
 	deleteMany(ids: ID[], options?: ItemsOptions): Promise<void>;

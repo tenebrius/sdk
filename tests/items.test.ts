@@ -288,6 +288,57 @@ describe('items', function () {
 		});
 	});
 
+	test(`update batch`, async (url, nock) => {
+		nock()
+			.patch('/items/posts')
+			.reply(200, {
+				data: [
+					{
+						id: 1,
+						title: 'Updated post',
+						body: 'Updated post content',
+						published: true,
+					},
+					{
+						id: 2,
+						title: 'Updated post',
+						body: 'Updated post content',
+						published: true,
+					},
+				],
+			});
+
+		const sdk = new Directus<Blog>(url);
+		const items = await sdk.items('posts').updateBatch([
+			{
+				id: 1,
+				title: 'Updated post',
+				body: 'Updated post content',
+				published: true,
+			},
+			{
+				id: 2,
+				title: 'Updated post 2',
+				body: 'Updated post content 2',
+				published: true,
+			},
+		]);
+
+		expect(items.data?.[0]).toMatchObject({
+			id: 1,
+			title: 'Updated post',
+			body: 'Updated post content',
+			published: true,
+		});
+
+		expect(items.data?.[1]).toMatchObject({
+			id: 2,
+			title: 'Updated post',
+			body: 'Updated post content',
+			published: true,
+		});
+	});
+
 	test(`delete one item`, async (url, nock) => {
 		const scope = nock().delete('/items/posts/1').reply(204);
 
