@@ -30,16 +30,16 @@ import { SingletonHandler } from '../handlers/singleton';
 
 export type DirectusStorageOptions = StorageOptions & { mode?: 'LocalStorage' | 'MemoryStorage' };
 
-export type DirectusOptions = {
-	auth?: IAuth | PartialBy<AuthOptions, 'transport' | 'storage'>;
+export type DirectusOptions<IAuthHandler extends IAuth = Auth> = {
+	auth?: IAuthHandler | PartialBy<AuthOptions, 'transport' | 'storage'>;
 	transport?: ITransport | TransportOptions;
 	storage?: IStorage | DirectusStorageOptions;
 };
 
-export class Directus<T extends TypeMap> implements IDirectus<T> {
+export class Directus<T extends TypeMap, IAuthHandler extends IAuth = Auth> implements IDirectus<T> {
 	private _url: string;
-	private _options?: DirectusOptions;
-	private _auth: IAuth;
+	private _options?: DirectusOptions<IAuthHandler>;
+	private _auth: IAuthHandler;
 	private _transport: ITransport;
 	private _storage: IStorage;
 	private _activity?: ActivityHandler<TypeOf<T, 'directus_activity'>>;
@@ -66,7 +66,7 @@ export class Directus<T extends TypeMap> implements IDirectus<T> {
 		[collection: string]: SingletonHandler<any>;
 	};
 
-	constructor(url: string, options?: DirectusOptions) {
+	constructor(url: string, options?: DirectusOptions<IAuthHandler>) {
 		this._url = url;
 		this._options = options;
 		this._items = {};
@@ -116,14 +116,14 @@ export class Directus<T extends TypeMap> implements IDirectus<T> {
 				transport: this._transport,
 				storage: this._storage,
 				...this._options?.auth,
-			} as AuthOptions);
+			} as AuthOptions) as unknown as IAuthHandler;
 	}
 
 	get url() {
 		return this._url;
 	}
 
-	get auth(): IAuth {
+	get auth(): IAuthHandler {
 		return this._auth;
 	}
 
