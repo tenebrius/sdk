@@ -6,6 +6,7 @@
 	"main": "dist/sdk.cjs.js",
 	"exports": {
 		".": {
+			"types": "./dist/index.d.ts",
 			"import": {
 				"node": "./index.mjs",
 				"default": "./dist/sdk.bundler.js"
