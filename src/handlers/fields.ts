@@ -24,12 +24,19 @@ export class FieldsHandler<T = FieldItem> {
 	async readMany(collection: string): Promise<ManyItems<T>> {
 		if (`${collection}` === '') throw new EmptyParamError('collection');
 		const response = await this.transport.get(`/fields/${collection}`);
-		return response.data as T;
+
+		return {
+			data: response.data as T[],
+			meta: undefined,
+		};
 	}
 
 	async readAll(): Promise<ManyItems<T>> {
 		const response = await this.transport.get(`/fields`);
-		return response.data as T;
+		return {
+			data: response.data as T[],
+			meta: undefined,
+		};
 	}
 
 	async createOne(collection: string, item: ItemInput<T>): Promise<OneItem<T>> {
