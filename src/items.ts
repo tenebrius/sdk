@@ -1,5 +1,5 @@
 import { TransportRequestOptions } from './transport';
-import { ID } from './types';
+import { ID, OptionalKeys, RequiredKeys } from './types';
 
 export type Field = string;
 
@@ -81,29 +81,35 @@ type DeepPathToObject<
 						[K in keyof T]: WildCardHelper<T, K, Val, Rest>;
 				  }
 				: Val & {
-						[K in keyof T]?: NextVal extends keyof T[K] ? DeepPathBranchHelper<T, K, Val, Rest> : never;
+						[K in keyof T]: NextVal extends keyof T[K] ? DeepPathBranchHelper<T, K, Val, Rest> : never;
 				  }
 			: Rest extends '*'
 			? Val & {
 					[K in keyof T]: WildCardHelper<T, K, Val, Rest>;
 			  }
 			: Val & {
-					[K in keyof T]?: Rest extends keyof T[K] ? DeepPathBranchHelper<T, K, Val, Rest> : never;
+					[K in keyof T]: Rest extends keyof T[K] ? DeepPathBranchHelper<T, K, Val, Rest> : never;
 			  }
 		: Key extends keyof T
 		? Val & {
-				[_ in Key]?: DeepPathBranchHelper<T, Key, Val, Rest>;
+				[K in OptionalKeys<Pick<T, Key>>]?: DeepPathBranchHelper<T, K, Val, Rest>;
+		  } & {
+				[K in RequiredKeys<Pick<T, Key>>]: DeepPathBranchHelper<T, K, Val, Rest>;
 		  }
 		: never
 	: string extends keyof T
 	? Val & Record<string, unknown>
 	: Path extends keyof T
 	? Val & {
-			[K in Path]?: TreeLeaf<T[K]>;
+			[K in OptionalKeys<Pick<T, Path>>]?: TreeLeaf<T[K]>;
+	  } & {
+			[K in RequiredKeys<Pick<T, Path>>]: TreeLeaf<T[K]>;
 	  }
 	: Path extends '*'
 	? Val & {
-			[K in keyof T]?: TreeLeaf<T[K]>;
+			[K in OptionalKeys<T>]?: TreeLeaf<T[K]>;
+	  } & {
+			[K in RequiredKeys<T>]: TreeLeaf<T[K]>;
 	  }
 	: never;
 
@@ -125,8 +131,8 @@ type ArrayTreeBranch<U, Path extends string, Val = Record<string, never>, NU = N
 	: DeepPathToObject<Path, NU, Val>;
 
 type TreeLeaf<T, NT = NonNullable<T>> = NT extends (infer U)[]
-	? Exclude<NonNullable<U>, Record<string, unknown>>[]
-	: Exclude<NT, Record<string, unknown>>;
+	? Exclude<U, Record<string, unknown>>[]
+	: Exclude<T, Record<string, unknown>>;
 
 type UnionToIntersectionFn<TUnion> = (TUnion extends TUnion ? (union: () => TUnion) => void : never) extends (
 	intersection: infer Intersection

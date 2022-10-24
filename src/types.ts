@@ -353,3 +353,11 @@ export type TfaType = SystemType<{
 	secret: string;
 	otpauth_url: string;
 }>;
+
+export type RequiredKeys<T> = {
+	[K in keyof T]-?: Record<string, never> extends { [P in K]: T[K] } ? never : K;
+}[keyof T];
+
+export type OptionalKeys<T> = {
+	[K in keyof T]-?: Record<string, never> extends { [P in K]: T[K] } ? K : never;
+}[keyof T];
