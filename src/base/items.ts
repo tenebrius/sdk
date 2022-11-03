@@ -38,7 +38,7 @@ export class ItemsHandler<T extends Item> implements IItems<T> {
 
 		const primaryKeyField = collectionFields.data?.find((field: any) => field.schema.is_primary_key === true);
 
-		const { data, meta } = await this.transport.get<OneItem<T, Q>[]>(`${this.endpoint}`, {
+		const { data, meta } = await this.transport.get<NonNullable<OneItem<T, Q>>[]>(`${this.endpoint}`, {
 			params: {
 				...query,
 				filter: {
@@ -57,7 +57,7 @@ export class ItemsHandler<T extends Item> implements IItems<T> {
 	}
 
 	async readByQuery<Q extends QueryMany<T>>(query?: Q, options?: ItemsOptions): Promise<ManyItems<T, Q>> {
-		const { data, meta } = await this.transport.get<OneItem<T, Q>[]>(`${this.endpoint}`, {
+		const { data, meta } = await this.transport.get<NonNullable<OneItem<T, Q>>[]>(`${this.endpoint}`, {
 			params: query,
 			...options?.requestOptions,
 		});
@@ -86,7 +86,7 @@ export class ItemsHandler<T extends Item> implements IItems<T> {
 		query?: Q,
 		options?: ItemsOptions
 	): Promise<ManyItems<T, Q>> {
-		return await this.transport.post<OneItem<T, Q>[]>(`${this.endpoint}`, items, {
+		return await this.transport.post<NonNullable<OneItem<T, Q>>[]>(`${this.endpoint}`, items, {
 			params: query,
 			...options?.requestOptions,
 		});
@@ -113,7 +113,7 @@ export class ItemsHandler<T extends Item> implements IItems<T> {
 		query?: Q,
 		options?: ItemsOptions
 	): Promise<ManyItems<T, Q>> {
-		return await this.transport.patch<OneItem<T, Q>[]>(
+		return await this.transport.patch<NonNullable<OneItem<T, Q>>[]>(
 			`${this.endpoint}`,
 			{
 				keys: ids,
@@ -132,7 +132,7 @@ export class ItemsHandler<T extends Item> implements IItems<T> {
 		query?: Q,
 		options?: ItemsOptions
 	): Promise<ManyItems<T, Q>> {
-		return await this.transport.patch<OneItem<T, Q>[]>(
+		return await this.transport.patch<NonNullable<OneItem<T, Q>>[]>(
 			`${this.endpoint}`,
 			{
 				query: updateQuery,

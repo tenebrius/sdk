@@ -27,7 +27,7 @@ export type OneItem<
 > = (F extends false ? DefaultItem<T> : PickedDefaultItem<T, F>) | null | undefined;
 
 export type ManyItems<T extends Item, Q extends QueryMany<T> = Record<string, any>> = {
-	data?: OneItem<T, Q>[] | null;
+	data?: NonNullable<OneItem<T, Q>>[] | null;
 	meta?: ItemMetadata;
 };
 
