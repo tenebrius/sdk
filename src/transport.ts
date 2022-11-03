@@ -1,4 +1,4 @@
-import { AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig, ResponseType } from 'axios';
 import { ItemMetadata } from './items';
 
 export type TransportErrorDescription = {
@@ -23,6 +23,7 @@ export type TransportMethods = 'get' | 'delete' | 'head' | 'options' | 'post' | 
 export type TransportRequestOptions = {
 	params?: any;
 	headers?: any;
+  responseType?: ResponseType;
 	onUploadProgress?: ((progressEvent: any) => void) | undefined;
 };
 
