@@ -33,7 +33,7 @@ export type DirectusStorageOptions = StorageOptions & { mode?: 'LocalStorage' | 
 
 export type DirectusOptions<IAuthHandler extends IAuth = Auth> = {
 	auth?: IAuthHandler | PartialBy<AuthOptions, 'transport' | 'storage'>;
-	transport?: ITransport | TransportOptions;
+	transport?: ITransport | Partial<TransportOptions>;
 	storage?: IStorage | DirectusStorageOptions;
 };
 
@@ -91,6 +91,7 @@ export class Directus<T extends TypeMap, IAuthHandler extends IAuth = Auth> impl
 		else {
 			this._transport = new Transport({
 				url: this.url,
+				...this._options?.transport,
 				beforeRequest: async (config) => {
 					await this._auth.refreshIfExpired();
 					const token = this.storage.auth_token;
@@ -100,15 +101,19 @@ export class Directus<T extends TypeMap, IAuthHandler extends IAuth = Auth> impl
 							: `Bearer ${this.storage.auth_token}`
 						: '';
 
-					return {
+					const authenticatedConfig = {
 						...config,
 						headers: {
 							Authorization: bearer,
 							...config.headers,
 						},
 					};
+
+					if (!(this._options?.transport instanceof ITransport) && this._options?.transport?.beforeRequest) {
+						return this._options?.transport?.beforeRequest(authenticatedConfig);
+					}
+					return authenticatedConfig;
 				},
-				...this._options?.transport,
 			});
 		}
 
