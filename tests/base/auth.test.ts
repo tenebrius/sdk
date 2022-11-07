@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { Directus } from '../../src';
+import { Auth, Directus, MemoryStorage, Transport } from '../../src';
 import { test } from '../utils';
 
 describe('auth', function () {
@@ -16,6 +16,57 @@ describe('auth', function () {
 
 		const sdk = new Directus(url);
 		await sdk.auth.static('token');
+	});
+
+	test(`should allow to extend auth handler`, async (url, nock) => {
+		class CustomAuthHandler extends Auth {
+			hello() {
+				return 'hello';
+			}
+		}
+
+		// eslint-disable-next-line prefer-const
+		let auth: CustomAuthHandler;
+		const storage = new MemoryStorage();
+
+		const transport = new Transport({
+			url,
+			beforeRequest: async (config) => {
+				await auth.refreshIfExpired();
+				const token = auth.storage.auth_token;
+				const bearer = token
+					? token.startsWith(`Bearer `)
+						? String(auth.storage.auth_token)
+						: `Bearer ${auth.storage.auth_token}`
+					: '';
+
+				return {
+					...config,
+					headers: {
+						Authorization: bearer,
+						...config.headers,
+					},
+				};
+			},
+		});
+
+		auth = new CustomAuthHandler({ storage, transport });
+
+		const sdk = new Directus(url, {
+			auth,
+			storage: auth.storage,
+			transport: auth.transport,
+		});
+
+		nock()
+			.get('/users/me')
+			.query({
+				access_token: 'token',
+			})
+			.reply(203);
+
+		await sdk.auth.static('token');
+		expect(sdk.auth.hello()).toBe('hello');
 	});
 
 	/*
