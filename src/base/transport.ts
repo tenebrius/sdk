@@ -45,6 +45,7 @@ export class Transport extends ITransport {
 				data: data,
 				params: options?.params,
 				headers: options?.headers,
+        responseType: options?.responseType,
 				onUploadProgress: options?.onUploadProgress,
 			};
 
@@ -59,7 +60,7 @@ export class Transport extends ITransport {
 				headers: response.headers,
 				data: response.data.data,
 				meta: response.data.meta,
-				errors: response.data.errors,
+				errors: response.data.errors
 			};
 
 			if (response.data.errors) {
@@ -82,7 +83,7 @@ export class Transport extends ITransport {
 					headers: err.response?.headers,
 					data: data?.data,
 					meta: data?.meta,
-					errors: data?.errors,
+					errors: data?.errors
 				});
 			}
 

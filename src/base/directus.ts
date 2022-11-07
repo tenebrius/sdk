@@ -2,6 +2,7 @@ import { IAuth, AuthOptions } from '../auth';
 import { IDirectus } from '../directus';
 import {
 	ActivityHandler,
+	AssetsHandler,
 	CollectionsHandler,
 	FieldsHandler,
 	FilesHandler,
@@ -42,6 +43,7 @@ export class Directus<T extends TypeMap, IAuthHandler extends IAuth = Auth> impl
 	private _auth: IAuthHandler;
 	private _transport: ITransport;
 	private _storage: IStorage;
+  private _assets?: AssetsHandler;
 	private _activity?: ActivityHandler<TypeOf<T, 'directus_activity'>>;
 	private _collections?: CollectionsHandler<TypeOf<T, 'directus_collections'>>;
 	private _fields?: FieldsHandler<TypeOf<T, 'directus_fields'>>;
@@ -139,6 +141,10 @@ export class Directus<T extends TypeMap, IAuthHandler extends IAuth = Auth> impl
 	get transport(): ITransport {
 		return this._transport;
 	}
+
+  get assets(): AssetsHandler {
+    return this._assets || (this._assets = new AssetsHandler(this.transport))
+  }
 
 	get activity(): ActivityHandler<TypeOf<T, 'directus_activity'>> {
 		return this._activity || (this._activity = new ActivityHandler<TypeOf<T, 'directus_activity'>>(this.transport));
