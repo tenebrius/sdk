@@ -107,6 +107,7 @@ export class Auth extends IAuth {
 
 	refresh(): Promise<AuthResult | false> {
 		const refreshPromise = async () => {
+			await new Promise((resolve) => setTimeout(resolve, 1)); //make this whole call really async
 			const refresh_token = this._storage.auth_refresh_token;
 			this.resetStorage();
 

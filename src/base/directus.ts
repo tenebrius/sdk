@@ -43,7 +43,7 @@ export class Directus<T extends TypeMap, IAuthHandler extends IAuth = Auth> impl
 	private _auth: IAuthHandler;
 	private _transport: ITransport;
 	private _storage: IStorage;
-  private _assets?: AssetsHandler;
+	private _assets?: AssetsHandler;
 	private _activity?: ActivityHandler<TypeOf<T, 'directus_activity'>>;
 	private _collections?: CollectionsHandler<TypeOf<T, 'directus_collections'>>;
 	private _fields?: FieldsHandler<TypeOf<T, 'directus_fields'>>;
@@ -93,22 +93,25 @@ export class Directus<T extends TypeMap, IAuthHandler extends IAuth = Auth> impl
 				url: this.url,
 				...this._options?.transport,
 				beforeRequest: async (config) => {
-					await this._auth.refreshIfExpired();
-					const token = this.storage.auth_token;
-					const bearer = token
-						? token.startsWith(`Bearer `)
-							? String(this.storage.auth_token)
-							: `Bearer ${this.storage.auth_token}`
-						: '';
+					let authenticatedConfig = config;
+					if (config.url !== '/auth/refresh') {
+						//because the whole refreshIfExpired call is now async, prevent deadlock by skipping it if really refreshing token
+						await this._auth.refreshIfExpired();
+						const token = this.storage.auth_token;
+						const bearer = token
+							? token.startsWith(`Bearer `)
+								? String(this.storage.auth_token)
+								: `Bearer ${this.storage.auth_token}`
+							: '';
 
-					const authenticatedConfig = {
-						...config,
-						headers: {
-							Authorization: bearer,
-							...config.headers,
-						},
-					};
-
+						authenticatedConfig = {
+							...config,
+							headers: {
+								Authorization: bearer,
+								...config.headers,
+							},
+						};
+					}
 					if (!(this._options?.transport instanceof ITransport) && this._options?.transport?.beforeRequest) {
 						return this._options?.transport?.beforeRequest(authenticatedConfig);
 					}
@@ -142,9 +145,9 @@ export class Directus<T extends TypeMap, IAuthHandler extends IAuth = Auth> impl
 		return this._transport;
 	}
 
-  get assets(): AssetsHandler {
-    return this._assets || (this._assets = new AssetsHandler(this.transport))
-  }
+	get assets(): AssetsHandler {
+		return this._assets || (this._assets = new AssetsHandler(this.transport));
+	}
 
 	get activity(): ActivityHandler<TypeOf<T, 'directus_activity'>> {
 		return this._activity || (this._activity = new ActivityHandler<TypeOf<T, 'directus_activity'>>(this.transport));

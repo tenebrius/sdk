@@ -99,8 +99,8 @@ class ItemsHandler {
             ...options === null || options === void 0 ? void 0 : options.requestOptions,
         });
     }
-    async updateBatch(data, query, options) {
-        return await this.transport.patch(`${this.endpoint}`, data, {
+    async updateBatch(items, query, options) {
+        return await this.transport.patch(`${this.endpoint}`, items, {
             params: query,
             ...options === null || options === void 0 ? void 0 : options.requestOptions,
         });
@@ -157,6 +157,20 @@ class ActivityHandler extends ItemsHandler {
     }
     get comments() {
         return this._comments;
+    }
+}
+
+class AssetsHandler {
+    constructor(transport) {
+        this.transport = transport;
+    }
+    async readOne(id) {
+        if (`${id}` === '')
+            throw new EmptyParamError('id');
+        const response = await this.transport.get(`/assets/${id}`, {
+            responseType: "stream"
+        });
+        return response.raw;
     }
 }
 
@@ -223,11 +237,17 @@ class FieldsHandler {
         if (`${collection}` === '')
             throw new EmptyParamError('collection');
         const response = await this.transport.get(`/fields/${collection}`);
-        return response.data;
+        return {
+            data: response.data,
+            meta: undefined,
+        };
     }
     async readAll() {
         const response = await this.transport.get(`/fields`);
-        return response.data;
+        return {
+            data: response.data,
+            meta: undefined,
+        };
     }
     async createOne(collection, item) {
         if (`${collection}` === '')
@@ -676,6 +696,7 @@ class Transport extends ITransport {
                 data: data,
                 params: options === null || options === void 0 ? void 0 : options.params,
                 headers: options === null || options === void 0 ? void 0 : options.headers,
+                responseType: options === null || options === void 0 ? void 0 : options.responseType,
                 onUploadProgress: options === null || options === void 0 ? void 0 : options.onUploadProgress,
             };
             config = await this.beforeRequest(config);
@@ -687,7 +708,7 @@ class Transport extends ITransport {
                 headers: response.headers,
                 data: response.data.data,
                 meta: response.data.meta,
-                errors: response.data.errors,
+                errors: response.data.errors
             };
             if (response.data.errors) {
                 throw new TransportError(null, content);
@@ -707,7 +728,7 @@ class Transport extends ITransport {
                     headers: (_e = err.response) === null || _e === void 0 ? void 0 : _e.headers,
                     data: data === null || data === void 0 ? void 0 : data.data,
                     meta: data === null || data === void 0 ? void 0 : data.meta,
-                    errors: data === null || data === void 0 ? void 0 : data.errors,
+                    errors: data === null || data === void 0 ? void 0 : data.errors
                 });
             }
             throw new TransportError(err);
@@ -833,6 +854,7 @@ class Auth extends IAuth {
     refresh() {
         const refreshPromise = async () => {
             var _a;
+            await new Promise((resolve) => setTimeout(resolve, 1)); //make this whole call really async
             const refresh_token = this._storage.auth_refresh_token;
             this.resetStorage();
             const response = await this._transport.post('/auth/refresh', {
@@ -932,23 +954,32 @@ class Directus {
         else {
             this._transport = new Transport({
                 url: this.url,
-                beforeRequest: async (config) => {
-                    await this._auth.refreshIfExpired();
-                    const token = this.storage.auth_token;
-                    const bearer = token
-                        ? token.startsWith(`Bearer `)
-                            ? String(this.storage.auth_token)
-                            : `Bearer ${this.storage.auth_token}`
-                        : '';
-                    return {
-                        ...config,
-                        headers: {
-                            Authorization: bearer,
-                            ...config.headers,
-                        },
-                    };
-                },
                 ...(_f = this._options) === null || _f === void 0 ? void 0 : _f.transport,
+                beforeRequest: async (config) => {
+                    var _a, _b, _c, _d, _e;
+                    let authenticatedConfig = config;
+                    if (config.url !== '/auth/refresh') {
+                        //because the whole refreshIfExpired call is now async, prevent deadlock by skipping it if really refreshing token
+                        await this._auth.refreshIfExpired();
+                        const token = this.storage.auth_token;
+                        const bearer = token
+                            ? token.startsWith(`Bearer `)
+                                ? String(this.storage.auth_token)
+                                : `Bearer ${this.storage.auth_token}`
+                            : '';
+                        authenticatedConfig = {
+                            ...config,
+                            headers: {
+                                Authorization: bearer,
+                                ...config.headers,
+                            },
+                        };
+                    }
+                    if (!(((_a = this._options) === null || _a === void 0 ? void 0 : _a.transport) instanceof ITransport) && ((_c = (_b = this._options) === null || _b === void 0 ? void 0 : _b.transport) === null || _c === void 0 ? void 0 : _c.beforeRequest)) {
+                        return (_e = (_d = this._options) === null || _d === void 0 ? void 0 : _d.transport) === null || _e === void 0 ? void 0 : _e.beforeRequest(authenticatedConfig);
+                    }
+                    return authenticatedConfig;
+                },
             });
         }
         if (((_g = this._options) === null || _g === void 0 ? void 0 : _g.auth) && ((_h = this._options) === null || _h === void 0 ? void 0 : _h.auth) instanceof IAuth)
@@ -971,6 +1002,9 @@ class Directus {
     }
     get transport() {
         return this._transport;
+    }
+    get assets() {
+        return this._assets || (this._assets = new AssetsHandler(this.transport));
     }
     get activity() {
         return this._activity || (this._activity = new ActivityHandler(this.transport));
@@ -1029,6 +1063,7 @@ class Directus {
 }
 
 exports.ActivityHandler = ActivityHandler;
+exports.AssetsHandler = AssetsHandler;
 exports.Auth = Auth;
 exports.BaseStorage = BaseStorage;
 exports.CollectionsHandler = CollectionsHandler;
