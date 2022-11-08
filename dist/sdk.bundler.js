@@ -823,27 +823,50 @@ class Auth extends IAuth {
             return;
         if (!this.autoRefresh)
             return;
-        if (!this._storage.auth_expires_at) {
-            // wait because resetStorage() call in refresh()
+        if (this._refreshPromise) {
             try {
                 await this._refreshPromise;
             }
             finally {
                 this._refreshPromise = undefined;
             }
-            return;
         }
-        if (this._storage.auth_expires_at < new Date().getTime() + this.msRefreshBeforeExpires) {
-            this.refresh();
+        else {
+            if (this._storage.auth_expires_at &&
+                this._storage.auth_expires_at < new Date().getTime() + this.msRefreshBeforeExpires) {
+                this.refresh();
+                try {
+                    await this._refreshPromise; // wait for refresh
+                }
+                finally {
+                    this._refreshPromise = undefined;
+                }
+            }
         }
-        try {
-            await this._refreshPromise; // wait for refresh
-        }
-        finally {
-            this._refreshPromise = undefined;
-        }
+        // if (!this._storage.auth_expires_at) {
+        // 	// wait because resetStorage() call in refresh()
+        // 	try {
+        // 		await this._refreshPromise;
+        // 	} finally {
+        // 		this._refreshPromise = undefined;
+        // 	}
+        // 	return;
+        // }
+        //
+        // if (this._storage.auth_expires_at < new Date().getTime() + this.msRefreshBeforeExpires) {
+        // 	this.refresh();
+        // }
+        //
+        // try {
+        // 	await this._refreshPromise; // wait for refresh
+        // } finally {
+        // 	this._refreshPromise = undefined;
+        // }
     }
     refresh() {
+        if (this._refreshPromise) {
+            return this._refreshPromise;
+        }
         const refreshPromise = async () => {
             var _a;
             await new Promise((resolve) => setTimeout(resolve, 1)); //make this whole call really async
