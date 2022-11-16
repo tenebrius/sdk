@@ -45,6 +45,7 @@ export class Transport extends ITransport {
 				data: data,
 				params: options?.params,
 				headers: options?.headers,
+				responseType: options?.responseType,
 				onUploadProgress: options?.onUploadProgress,
 			};
 

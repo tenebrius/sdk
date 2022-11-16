@@ -1,4 +1,5 @@
 export * from './activity';
+export * from './assets';
 export * from './comments';
 export * from './collections';
 export * from './fields';

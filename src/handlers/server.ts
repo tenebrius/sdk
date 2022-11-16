@@ -17,16 +17,6 @@ export type ServerInfo = {
 	directus?: {
 		version: string;
 	};
-	node?: {
-		version: string;
-		uptime: number;
-	};
-	os?: {
-		type: string;
-		version: string;
-		uptime: number;
-		totalmem: number;
-	};
 };
 
 export class ServerHandler {
