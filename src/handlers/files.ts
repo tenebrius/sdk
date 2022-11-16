@@ -14,8 +14,8 @@ export class FilesHandler<T = DefaultType> extends ItemsHandler<FileItem<T>> {
 		super('directus_files', transport);
 	}
 
-	async import(body: { url: string; data?: ItemInput<T> }): Promise<OneItem<T>> {
+	async import(body: { url: string; data?: ItemInput<T> }): Promise<OneItem<NonNullable<T>>> {
 		const response = await this.transport.post(`/files/import`, body);
-		return response.data as OneItem<T>;
+		return response.data as OneItem<NonNullable<T>>;
 	}
 }

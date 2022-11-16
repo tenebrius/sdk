@@ -14,13 +14,13 @@ export class CollectionsHandler<T = CollectionItem> {
 		this.transport = transport;
 	}
 
-	async readOne(collection: string): Promise<OneItem<T>> {
+	async readOne(collection: string): Promise<OneItem<NonNullable<T>>> {
 		if (`${collection}` === '') throw new EmptyParamError('collection');
 		const response = await this.transport.get(`/collections/${collection}`);
-		return response.data as OneItem<T>;
+		return response.data as OneItem<NonNullable<T>>;
 	}
 
-	async readAll(): Promise<ManyItems<T>> {
+	async readAll(): Promise<ManyItems<NonNullable<T>>> {
 		const { data, meta } = await this.transport.get(`/collections`);
 
 		return {
@@ -29,11 +29,11 @@ export class CollectionsHandler<T = CollectionItem> {
 		};
 	}
 
-	async createOne(collection: ItemInput<T>): Promise<OneItem<T>> {
-		return (await this.transport.post<OneItem<T>>(`/collections`, collection)).data;
+	async createOne(collection: ItemInput<T>): Promise<OneItem<NonNullable<T>>> {
+		return (await this.transport.post<OneItem<NonNullable<T>>>(`/collections`, collection)).data;
 	}
 
-	async createMany(collections: ItemInput<T>[]): Promise<ManyItems<T>> {
+	async createMany(collections: ItemInput<T>[]): Promise<ManyItems<NonNullable<T>>> {
 		const { data, meta } = await this.transport.post(`/collections`, collections);
 
 		return {
@@ -42,10 +42,10 @@ export class CollectionsHandler<T = CollectionItem> {
 		};
 	}
 
-	async updateOne(collection: string, item: ItemInput<T>, query?: QueryOne<T>): Promise<OneItem<T>> {
+	async updateOne(collection: string, item: ItemInput<T>, query?: QueryOne<T>): Promise<OneItem<NonNullable<T>>> {
 		if (`${collection}` === '') throw new EmptyParamError('collection');
 		return (
-			await this.transport.patch<OneItem<T>>(`/collections/${collection}`, item, {
+			await this.transport.patch<OneItem<NonNullable<T>>>(`/collections/${collection}`, item, {
 				params: query,
 			})
 		).data;
