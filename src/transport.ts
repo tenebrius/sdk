@@ -25,6 +25,8 @@ export type TransportRequestOptions = {
 	headers?: any;
 	responseType?: ResponseType;
 	onUploadProgress?: ((progressEvent: any) => void) | undefined;
+	maxBodyLength?: number;
+	maxContentLength?: number;
 };
 
 export type TransportOptions = TransportRequestOptions & {
