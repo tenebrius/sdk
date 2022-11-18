@@ -308,7 +308,7 @@ export interface IItems<T extends Item> {
 		options?: ItemsOptions
 	): Promise<ManyItems<T, Q>>;
 	updateBatch<Q extends QueryMany<T>>(
-		items: PartialItem<T>[],
+		items: ItemInput<T>[],
 		query?: Q,
 		options?: ItemsOptions
 	): Promise<ManyItems<T, Q>>;

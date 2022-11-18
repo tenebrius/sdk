@@ -127,11 +127,11 @@ export class ItemsHandler<T extends Item> implements IItems<T> {
 	}
 
 	async updateBatch<Q extends QueryMany<T>>(
-		items: PartialItem<T>[],
+		items: ItemInput<T>[],
 		query?: Q,
 		options?: ItemsOptions
 	): Promise<ManyItems<T, Q>> {
-		return await this.transport.patch<OneItem<T, Q>[]>(`${this.endpoint}`, items, {
+		return await this.transport.patch<NonNullable<OneItem<T, Q>>[]>(`${this.endpoint}`, items, {
 			params: query,
 			...options?.requestOptions,
 		});

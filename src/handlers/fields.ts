@@ -14,40 +14,40 @@ export class FieldsHandler<T = FieldItem> {
 		this.transport = transport;
 	}
 
-	async readOne(collection: string, id: ID): Promise<OneItem<T>> {
+	async readOne(collection: string, id: ID): Promise<OneItem<NonNullable<T>>> {
 		if (`${collection}` === '') throw new EmptyParamError('collection');
 		if (`${id}` === '') throw new EmptyParamError('id');
 		const response = await this.transport.get(`/fields/${collection}/${id}`);
-		return response.data as OneItem<T>;
+		return response.data as OneItem<NonNullable<T>>;
 	}
 
-	async readMany(collection: string): Promise<ManyItems<T>> {
+	async readMany(collection: string): Promise<ManyItems<NonNullable<T>>> {
 		if (`${collection}` === '') throw new EmptyParamError('collection');
 		const response = await this.transport.get(`/fields/${collection}`);
 
 		return {
-			data: response.data as T[],
+			data: response.data as DefaultItem<NonNullable<T>>[],
 			meta: undefined,
 		};
 	}
 
-	async readAll(): Promise<ManyItems<T>> {
+	async readAll(): Promise<ManyItems<NonNullable<T>>> {
 		const response = await this.transport.get(`/fields`);
 		return {
-			data: response.data as T[],
+			data: response.data as DefaultItem<NonNullable<T>>[],
 			meta: undefined,
 		};
 	}
 
-	async createOne(collection: string, item: ItemInput<T>): Promise<OneItem<T>> {
+	async createOne(collection: string, item: ItemInput<T>): Promise<OneItem<NonNullable<T>>> {
 		if (`${collection}` === '') throw new EmptyParamError('collection');
-		return (await this.transport.post<DefaultItem<T>>(`/fields/${collection}`, item)).data;
+		return (await this.transport.post<DefaultItem<NonNullable<T>>>(`/fields/${collection}`, item)).data;
 	}
 
-	async updateOne(collection: string, field: string, item: ItemInput<T>): Promise<OneItem<T>> {
+	async updateOne(collection: string, field: string, item: ItemInput<T>): Promise<OneItem<NonNullable<T>>> {
 		if (`${collection}` === '') throw new EmptyParamError('collection');
 		if (`${field}` === '') throw new EmptyParamError('field');
-		return (await this.transport.patch<DefaultItem<T>>(`/fields/${collection}/${field}`, item)).data;
+		return (await this.transport.patch<DefaultItem<NonNullable<T>>>(`/fields/${collection}/${field}`, item)).data;
 	}
 
 	async deleteOne(collection: string, field: string): Promise<void> {
