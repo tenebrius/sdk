@@ -23,8 +23,10 @@ export type TransportMethods = 'get' | 'delete' | 'head' | 'options' | 'post' | 
 export type TransportRequestOptions = {
 	params?: any;
 	headers?: any;
-  responseType?: ResponseType;
+	responseType?: ResponseType;
 	onUploadProgress?: ((progressEvent: any) => void) | undefined;
+	maxBodyLength?: number;
+	maxContentLength?: number;
 };
 
 export type TransportOptions = TransportRequestOptions & {

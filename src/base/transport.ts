@@ -18,6 +18,8 @@ export class Transport extends ITransport {
 			params: this.config.params,
 			headers: this.config.headers,
 			onUploadProgress: this.config.onUploadProgress,
+			maxBodyLength: this.config.maxBodyLength,
+			maxContentLength: this.config.maxContentLength,
 			withCredentials: true,
 		});
 
@@ -45,7 +47,7 @@ export class Transport extends ITransport {
 				data: data,
 				params: options?.params,
 				headers: options?.headers,
-        responseType: options?.responseType,
+				responseType: options?.responseType,
 				onUploadProgress: options?.onUploadProgress,
 			};
 
@@ -60,7 +62,7 @@ export class Transport extends ITransport {
 				headers: response.headers,
 				data: response.data.data,
 				meta: response.data.meta,
-				errors: response.data.errors
+				errors: response.data.errors,
 			};
 
 			if (response.data.errors) {
@@ -83,7 +85,7 @@ export class Transport extends ITransport {
 					headers: err.response?.headers,
 					data: data?.data,
 					meta: data?.meta,
-					errors: data?.errors
+					errors: data?.errors,
 				});
 			}
 

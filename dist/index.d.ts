@@ -504,6 +504,8 @@ declare type TransportRequestOptions = {
     headers?: any;
     responseType?: ResponseType;
     onUploadProgress?: ((progressEvent: any) => void) | undefined;
+    maxBodyLength?: number;
+    maxContentLength?: number;
 };
 declare type TransportOptions = TransportRequestOptions & {
     url: string;
@@ -729,16 +731,6 @@ declare type ServerInfo = {
     };
     directus?: {
         version: string;
-    };
-    node?: {
-        version: string;
-        uptime: number;
-    };
-    os?: {
-        type: string;
-        version: string;
-        uptime: number;
-        totalmem: number;
     };
 };
 declare class ServerHandler {

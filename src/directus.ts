@@ -26,7 +26,7 @@ import { ISingleton } from './singleton';
 
 export type DirectusTypes = {
 	activity: undefined;
-  assets: undefined;
+  	assets: undefined;
 	collections: undefined;
 	fields: undefined;
 	files: undefined;
@@ -52,7 +52,7 @@ export interface IDirectusBase {
 
 export interface IDirectus<T extends TypeMap> extends IDirectusBase {
 	readonly activity: ActivityHandler<TypeOf<T, 'directus_activity'>>;
-  readonly assets: AssetsHandler;
+  	readonly assets: AssetsHandler;
 	readonly collections: CollectionsHandler<TypeOf<T, 'directus_collections'>>;
 	readonly files: FilesHandler<TypeOf<T, 'directus_files'>>;
 	readonly fields: FieldsHandler<TypeOf<T, 'directus_fields'>>;

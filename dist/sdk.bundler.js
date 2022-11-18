@@ -160,7 +160,7 @@ class AssetsHandler {
         if (`${id}` === '')
             throw new EmptyParamError('id');
         const response = await this.transport.get(`/assets/${id}`, {
-            responseType: "stream"
+            responseType: 'stream',
         });
         return response.raw;
     }
@@ -668,6 +668,8 @@ class Transport extends ITransport {
             params: this.config.params,
             headers: this.config.headers,
             onUploadProgress: this.config.onUploadProgress,
+            maxBodyLength: this.config.maxBodyLength,
+            maxContentLength: this.config.maxContentLength,
             withCredentials: true,
         });
         if ((_a = this.config) === null || _a === void 0 ? void 0 : _a.beforeRequest)
@@ -700,7 +702,7 @@ class Transport extends ITransport {
                 headers: response.headers,
                 data: response.data.data,
                 meta: response.data.meta,
-                errors: response.data.errors
+                errors: response.data.errors,
             };
             if (response.data.errors) {
                 throw new TransportError(null, content);
@@ -720,7 +722,7 @@ class Transport extends ITransport {
                     headers: (_e = err.response) === null || _e === void 0 ? void 0 : _e.headers,
                     data: data === null || data === void 0 ? void 0 : data.data,
                     meta: data === null || data === void 0 ? void 0 : data.meta,
-                    errors: data === null || data === void 0 ? void 0 : data.errors
+                    errors: data === null || data === void 0 ? void 0 : data.errors,
                 });
             }
             throw new TransportError(err);
