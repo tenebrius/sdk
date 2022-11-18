@@ -51,6 +51,10 @@ export class Transport extends ITransport {
 				onUploadProgress: options?.onUploadProgress,
 			};
 
+			if (options?.requestProperties) {
+				config = { ...config, ...options?.requestProperties };
+			}
+
 			config = await this.beforeRequest(config);
 
 			const response = await this.axios.request<any>(config);

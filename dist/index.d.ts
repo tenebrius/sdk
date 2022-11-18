@@ -506,6 +506,7 @@ declare type TransportRequestOptions = {
     onUploadProgress?: ((progressEvent: any) => void) | undefined;
     maxBodyLength?: number;
     maxContentLength?: number;
+    requestProperties?: any;
 };
 declare type TransportOptions = TransportRequestOptions & {
     url: string;

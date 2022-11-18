@@ -701,6 +701,9 @@ class Transport extends ITransport {
                 responseType: options === null || options === void 0 ? void 0 : options.responseType,
                 onUploadProgress: options === null || options === void 0 ? void 0 : options.onUploadProgress,
             };
+            if (options === null || options === void 0 ? void 0 : options.requestProperties) {
+                config = { ...config, ...options === null || options === void 0 ? void 0 : options.requestProperties };
+            }
             config = await this.beforeRequest(config);
             const response = await this.axios.request(config);
             const content = {

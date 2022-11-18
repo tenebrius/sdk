@@ -27,6 +27,7 @@ export type TransportRequestOptions = {
 	onUploadProgress?: ((progressEvent: any) => void) | undefined;
 	maxBodyLength?: number;
 	maxContentLength?: number;
+	requestProperties?: any;
 };
 
 export type TransportOptions = TransportRequestOptions & {
